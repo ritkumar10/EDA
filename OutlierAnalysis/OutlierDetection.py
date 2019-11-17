@@ -178,7 +178,7 @@ class OutlierDetection:
     '''
     A. This OutlierDetection class has 3 methods (class functions):
        1. Outliers : It performs univariate and bivariate outlier detection based on the arguments like method, x_col and y_col
-                     (dependent variable) passed and returns a dataframe of the column passed with the addition of an 'Outliers'
+                     (target variable) passed and returns a dataframe of the column passed with the addition of an 'Outliers'
                      column having 0 and 1 as its value with 1 representing outliers and 0 for normal data points.
 
        2. OutliersFullData: It also does the same thing as Outliers method but for the complete data. It returns a dataframe with
@@ -191,7 +191,7 @@ class OutlierDetection:
 
     B. Description of the arguments to be passed:
        x_col = predictor
-       y_col = dependent variable to be predicted
+       y_col = target variable to be predicted
        method = for univariate outliers: [1. '3sigma', 2. 'boxplot']
                 for bivariate outliers [1. 'IForest', 2. 'CBLOF', 3. 'ABOD', 4. 'Feature Bagging', 5. 'HBOS', 6. 'KNN', 7. 'AvgKNN']
                 Note: IForest and CBLOF performs best
@@ -206,7 +206,7 @@ class OutlierDetection:
                      considered outliers.
 
     D. Bivariate Outliers Detection
-       Performed on two variables, where x_col is the predictor and y_col is the dependent variable using methods like:
+       Performed on two variables, where x_col is the predictor and y_col is the target variable using methods like:
 
        1. IForest : Isolation Forest
 
