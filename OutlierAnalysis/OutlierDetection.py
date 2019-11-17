@@ -298,5 +298,3 @@ class OutlierDetection:
         visualize = True
         outlier_detection(self.df, method, x_col, y_col, outlier_fraction, visualize)
 
-    def __str__(self):
-        return '{}'.format(help(OutlierDetection))
