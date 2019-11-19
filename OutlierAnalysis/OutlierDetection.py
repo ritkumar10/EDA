@@ -241,7 +241,7 @@ class OutlierDetection:
 
            This is an effective system for handling unsupervised data, it assumes feature independence. The metric
            used for outlier detection is the construction of histograms and measuring distance from the histogram.
-           It’s much faster than multivariate approaches, but at the cost of lower accuracy.
+           Its much faster than multivariate approaches, but at the cost of lower accuracy.
 
        6. KNN: K Nearest Neighbors
 
