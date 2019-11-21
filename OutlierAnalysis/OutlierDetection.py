@@ -17,7 +17,7 @@ from pyod.models.lof import LOF
 from sklearn.preprocessing import MinMaxScaler
 
 def univariate_outliers(df, method, x_col, visualize):
-    if method in ['3sigma']:
+    if method == '3sigma':
         mu = df[x_col].mean()
         std = df[x_col].std()
         upper_extreme_3sig = mu + 3 * std
@@ -45,7 +45,7 @@ def univariate_outliers(df, method, x_col, visualize):
 
             return df, lower_extreme_3sig, upper_extreme_3sig
 
-    else:
+    elif method == '1.5_IQR':
         if visualize:
             plt.figure(figsize=(8, 6))
             sns.set_style("darkgrid")
@@ -60,6 +60,28 @@ def univariate_outliers(df, method, x_col, visualize):
 
             upper_extreme_boxplt = _3rd_qnt + 1.5 * IQR
             lower_extreme_boxplt = _1st_qnt - 1.5 * IQR
+
+            df['Outliers'] = 0
+            df.loc[(df[x_col] < lower_extreme_boxplt), 'Outliers'] = 1
+            df.loc[(df[x_col] > upper_extreme_boxplt), 'Outliers'] = 1
+
+            return df, lower_extreme_boxplt, upper_extreme_boxplt
+
+    else:
+        if visualize:
+            plt.figure(figsize=(8, 6))
+            sns.set_style("darkgrid")
+            ax = sns.boxplot(y=df[x_col].dropna())
+            plt.title('Boxplot' + ' Distribution', fontsize=20)
+            ax.set_ylabel(x_col, fontsize=16)
+            plt.show()
+        else:
+            _1st_qnt = df[x_col].quantile(0.25)
+            _3rd_qnt = df[x_col].quantile(0.75)
+            IQR = _3rd_qnt - _1st_qnt
+
+            upper_extreme_boxplt = _3rd_qnt + 3 * IQR
+            lower_extreme_boxplt = _1st_qnt - 3 * IQR
 
             df['Outliers'] = 0
             df.loc[(df[x_col] < lower_extreme_boxplt), 'Outliers'] = 1
@@ -169,7 +191,7 @@ def bivariate_outliers(df, method, x_col, y_col, outliers_fraction, visualize):
         plt.show()
 
 def outlier_detection(df, method, x_col, y_col, outliers_fraction, visualize = False):
-    if method in ['3sigma', 'boxplot']:
+    if method in ['3sigma', '1.5_IQR', '3_IQR']:
         return univariate_outliers(df, method, x_col, visualize)
     else:
         return bivariate_outliers(df, method, x_col, y_col, outliers_fraction, visualize)
@@ -192,7 +214,7 @@ class OutlierDetection:
     B. Description of the arguments to be passed:
        x_col = predictor
        y_col = target variable to be predicted
-       method = for univariate outliers: [1. '3sigma', 2. 'boxplot']
+       method = for univariate outliers: [1. '3sigma', 2. '1.5_IQR' 3. '3_IQR']
                 for bivariate outliers [1. 'IForest', 2. 'CBLOF', 3. 'ABOD', 4. 'Feature Bagging', 5. 'HBOS', 6. 'KNN', 7. 'AvgKNN']
                 Note: IForest and CBLOF performs best
        outlier_fraction (default: 0.05) = fraction of outliers that is being expected in the data. Only for bivariate outlier detection
@@ -202,7 +224,10 @@ class OutlierDetection:
 
        1. '3sigma' : Datapoints less than (mean - 3 * std) and greater than  (mean + 3 * std) are considered outliers. Only
                      applicable if the distribution is normal.
-       2. 'boxplot': Datapoints less than (1st quantile - 1.5 * IQR) and greater than  (1st quantile + 1.5 * IQR) are
+       2. '1.5_IQR': Datapoints less than (1st quantile - 1.5 * IQR) and greater than  (3rd quantile + 1.5 * IQR) are
+                     considered outliers.
+
+       3. '3_IQR': Datapoints less than (1st quantile - 3 * IQR) and greater than  (3rd quantile + 3 * IQR) are
                      considered outliers.
 
     D. Bivariate Outliers Detection
