@@ -22,10 +22,10 @@ class Binning:
         Bins have equal data points
         '''
         if self.df[x_col].dtypes == 'O':
-            temp_df = df.loc[:, [x_col, y_col]]
+            temp_df = self.df.loc[:, [x_col, y_col]]
             return temp_df[[x_col, y_col]].groupby(x_col, as_index=False).mean()
         else:
-            temp_df = df.loc[:, [x_col, y_col]]
+            temp_df = self.df.loc[:, [x_col, y_col]]
             labels = range(1, bins + 1)
             temp_df[x_col + '_bin'] = pd.qcut(temp_df[x_col], bins, labels=labels)
             temp_df['bin_range'] = pd.qcut(temp_df[x_col], bins)
@@ -41,17 +41,18 @@ class Binning:
         Equal range bins
         '''
         if self.df[x_col].dtypes == 'O':
-            temp_df = df.loc[:, [x_col, y_col]]
+            temp_df = self.df.loc[:, [x_col, y_col]]
             return temp_df[[x_col, y_col]].groupby(x_col, as_index=False).mean()
         else:
-            temp_df = df.loc[:, [x_col, y_col]]
+            
+            temp_df = self.df.loc[:, [x_col, y_col]]
             labels = range(1, bins + 1)
             temp_df[x_col + '_bin'] = pd.cut(temp_df[x_col], bins, labels=labels)
+            temp_df[x_col + '_bin']=temp_df[x_col + '_bin'].astype(str)
             temp_df['bin_range'] = pd.cut(temp_df[x_col], bins)
+            temp_df['bin_range']=temp_df['bin_range'].astype(str)
             count = temp_df[x_col + '_bin'].value_counts(sort=False).values
-            df1 = temp_df[[x_col + '_bin', y_col]].groupby([x_col + '_bin'], as_index=False).mean()
-            df2 = temp_df[['bin_range', y_col]].groupby(['bin_range'], as_index=False).mean()
-            df1 = df1.merge(df2, how='left')
+            df1 = temp_df[[x_col + '_bin','bin_range' ,y_col]].groupby([x_col + '_bin','bin_range'], as_index=False)['isFraud'].mean()
             df1['count'] = count
             return df1.T.reindex([x_col + '_bin', 'bin_range', 'count', y_col]).T
 
