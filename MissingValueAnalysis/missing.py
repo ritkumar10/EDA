@@ -3,7 +3,7 @@ import pandas as pd
 from autoimpute.imputations import SingleImputer
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import LogisticRegression
-import knn as knn
+from MissingValueAnalysis import knn as knn
 
 
 class Missing(object):
@@ -27,7 +27,7 @@ class Missing(object):
         """
 
         missing_count=self.df.apply(lambda x: sum(x.isnull().values), axis = 0).rename('missing_count')
-        missing_perc = self.df.apply(lambda x: sum(x.isnull().values), axis=0).rename('missing_perc')/self.df.shape[0]
+        missing_perc = (self.df.apply(lambda x: sum(x.isnull().values), axis=0).rename('missing_perc')/self.df.shape[0])*100
         missing=pd.concat([missing_count,missing_perc],axis=1)
         return missing
 
@@ -128,3 +128,4 @@ class Missing(object):
             self.knn_imputation(col,predictors,n,n_threshold)
         else:
             self.model(method,col,predictors)
+
