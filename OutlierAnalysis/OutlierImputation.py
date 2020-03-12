@@ -5,49 +5,49 @@ class OutlierImputation:
     col = column in which outliers are to be imputed
     dfn = dataframe returned from OutlierDetection class after running Outlier method
     '''
-    def __init__(self):
-        pass
+    def __init__(self,df):
+        self.df=df
 
-    def median_imputation(self, df, col, dfn):
+    def median_imputation(self,col, dfn):
         index = dfn[dfn['Outliers'] == 1].index
-        df.loc[index, col] = df[col].median()
-        return df
+        self.df.loc[index, col] = self.df[col].median()
+        
 
-    def mean_imputation(self, df, col, dfn):
+    def mean_imputation(self,col, dfn):
         index = dfn[dfn['Outliers'] == 1].index
-        df.loc[index, col] = df[col].mean()
-        return df
+        self.df.loc[index, col] = self.df[col].mean()
+       
 
-    def _3sigma_capping(self, df, col, dfn):
-        mu = df[col].mean()
-        std = df[col].std()
+    def _3sigma_capping(self,col, dfn):
+        mu = self.df[col].mean()
+        std = self.df[col].std()
         lowest = mu - 3 * std
         highest = mu + 3 * std
 
-        df.loc[df[col] > highest, col] = highest
-        df.loc[df[col] < lowest, col] = lowest
-        return df
+        self.df.loc[self.df[col] > highest, col] = highest
+        self.df.loc[self.df[col] < lowest, col] = lowest
+      
 
-    def _IQR_capping(self, df, col, dfn):
-        _1st_qnt = df[col].quantile(0.25)
-        _3rd_qnt = df[col].quantile(0.75)
+    def _IQR_capping(self,col, dfn):
+        _1st_qnt = self.df[col].quantile(0.25)
+        _3rd_qnt = self.df[col].quantile(0.75)
         IQR = _3rd_qnt - _1st_qnt
 
         upper = _3rd_qnt + 1.5 * IQR
         lower = _1st_qnt - 1.5 * IQR
 
-        df.loc[(df[col] < lower), col] = lower
-        df.loc[(df[col] > upper), col] = upper
-        return df
+        self.df.loc[(df[col] < lower), col] = lower
+        self.df.loc[(df[col] > upper), col] = upper
+      
 
-    def _3IQR_capping(self, df, col, dfn):
-        _1st_qnt = df[col].quantile(0.25)
-        _3rd_qnt = df[col].quantile(0.75)
+    def _3IQR_capping(self,col, dfn):
+        _1st_qnt = self.df[col].quantile(0.25)
+        _3rd_qnt = self.df[col].quantile(0.75)
         IQR = _3rd_qnt - _1st_qnt
 
         upper = _3rd_qnt + 3 * IQR
         lower = _1st_qnt - 3 * IQR
 
-        df.loc[(df[col] < lower), col] = lower
-        df.loc[(df[col] > upper), col] = upper
-        return df
+        self.df.loc[(df[col] < lower), col] = lower
+        self.df.loc[(df[col] > upper), col] = upper
+
