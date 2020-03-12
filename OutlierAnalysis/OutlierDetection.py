@@ -283,6 +283,8 @@ class OutlierDetection:
 
     def __init__(self, df):
         self.df = df
+        self.df=self.df.fillna(99999999999) #modified 
+  
 
     def Outliers(self, method, x_col, y_col = None, outlier_fraction = 0.05):
 
@@ -322,4 +324,5 @@ class OutlierDetection:
     def plot(self, method, x_col, y_col = None, outlier_fraction = 0.05):
         visualize = True
         outlier_detection(self.df, method, x_col, y_col, outlier_fraction, visualize)
+
 
